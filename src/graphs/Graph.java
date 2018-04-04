@@ -1,98 +1,97 @@
 package graphs;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.Random;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 import java.util.Scanner;
 
-
 public class Graph {
-	private ArrayList<int[]> adj; // list of edges
-	private int V;
-	private int E;
-	ArrayList<String> lines = new ArrayList<>();
-	public Graph(String filename) {
-		adj = new ArrayList<int[]>();
+	private Map<Integer, List<Integer>> adjList;
+	private int n;
+	private int m;
+	
+	// takes file input and returns list of strings, each of the form "a b"
+	private static ArrayList<String> edgeListStrings(String filename)
+	{
+		ArrayList<String> edgeListStrings = new ArrayList<>();
 		
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(filename));
 			String line = reader.readLine();
 			while(line != null) {
-				lines.add(line);
+				edgeListStrings.add(line);
 				line = reader.readLine();
 			}
 			reader.close();
-		} catch(IOException e) {
-			System.err.println("Problem reading the file.");
+		} catch (IOException e) {
+			System.err.println("Problem reading file.");
 		}
-	
-		for (String string : lines) {
-			ArrayList<int[]> edgesForV = new ArrayList<>();
+		
+		return edgeListStrings;
+	}
+
+	private static ArrayList<Integer[]> edgeListInts(ArrayList<String> edgeListString)
+	{
+		ArrayList<Integer[]> edgeListInts = new ArrayList<>();
+		for (String string : edgeListString) {
+			Integer[] edge = new Integer[2];
 			Scanner s = new Scanner(string);
-			int vertex = s.nextInt();
-			while(s.hasNextInt()) {
-				int n = s.nextInt(); 
-				if(vertex < n) {
-					int[] edge = new int[2];
-					edge[0] = vertex;
-					edge[1] = n;
-					edgesForV.add(edge);
-				}
-			}
+			edge[0] = s.nextInt();
+			edge[1] = s.nextInt();
+			edgeListInts.add(edge);
 			s.close();
-			adj.addAll(edgesForV);
 		}
-		this.V = lines.size();
-		this.E = adj.size();
+		
+		return edgeListInts;
 	}
 	
-	private void contract(Random rdm) {
-		if(this.E > 0) {
-			int index = rdm.nextInt(this.E);
-			int[] cut = this.adj.get(index);
-			int u = cut[0];
-			int v = cut[1];
-		//remove all edges between u and v
-			Iterator<int[]> it1 = adj.iterator();
-			while(it1.hasNext()) {
-				int[] edge = it1.next();
-				if(edge[0] == u && edge[1] == v) {
-					it1.remove();
-					this.E--;
-				}
-			}
-			for (int[] edge : adj) {
-				if(edge[0]==v) {
-					edge[0] = u;
-				}	
-				if(edge[1]==v) {
-					edge[1] = u;
-				}
-				if(edge[0] > edge[1]) {
-					int temp = edge[0];
-					edge[0] = edge[1];
-					edge[1] = temp;
-				}
+	public Graph() {
+		this.n = 0;
+		this.m = 0;
+		this.adjList = new HashMap<>();
+	}
+	
+	public void constructGraph(ArrayList<Integer[]> edgeListInts) {
+		for (Integer[] edge : edgeListInts) {
+			if (adjList.containsKey(edge[0])) {
+				adjList.get(edge[0]).add(edge[1]);
+			} else {
+				adjList.put(edge[0], new LinkedList<Integer>());
+				adjList.get(edge[0]).add(edge[1]);
 			}
 		}
-		V--;
+		
+		this.m = edgeListInts.size();
+		this.n = Collections.max(adjList.keySet());
 	}
 	
 	public static void main(String[] args) {
-		int[] results = new int[1000];
-		for(int i = 0; i<1000; i++) {
-			Graph graph = new Graph("kargerMinCut.txt");
-			int v = graph.V;
-			for(int k = 1; k <= (v-2); k++) {
-				Random rdm = new Random();
-				graph.contract(rdm);
-			}
-			results[i] = graph.E;
+		ArrayList<String> edgesStr = edgeListStrings("SCCmini.txt");
+		for (String string : edgesStr) {
+			System.out.println(string);
 		}
-		java.util.Arrays.sort(results);
-		System.out.println(results[0]);
-
+		
+		ArrayList<Integer[]> edgesInt = edgeListInts(edgesStr);
+		for (Integer[] edge : edgesInt) {
+			System.out.println(edge[0] + ", " + edge[1]);
+		}
+		
+		Graph sampleGraph = new Graph();
+		sampleGraph.constructGraph(edgesInt);
+		
+		for (Integer source : sampleGraph.adjList.keySet()) {
+			System.out.println(source + ", " + sampleGraph.adjList.get(source));
+			
+		}
+		System.out.println(sampleGraph.m);
+		System.out.println(sampleGraph.n);
 	}
+
 }
+
