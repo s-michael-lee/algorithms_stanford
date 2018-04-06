@@ -16,6 +16,42 @@ public class Graph {
 	private int n;
 	private int m;
 	
+	public Graph() {
+		this.n = 0;
+		this.m = 0;
+		this.adjList = new HashMap<>();
+	}
+	
+	public Graph(String filename) {
+		ArrayList<String> edgeListStrings = edgeListStrings(filename);
+		ArrayList<Integer[]> edgeListInts = edgeListInts(edgeListStrings);
+		for (Integer[] edge : edgeListInts) {
+			if (this.adjList.containsKey(edge[0])) {
+				this.adjList.get(edge[0]).add(edge[1]);
+			} else {
+				this.adjList.put(edge[0], new LinkedList<Integer>());
+				this.adjList.get(edge[0]).add(edge[1]);
+			}
+		}
+		this.m = edgeListInts.size();
+		this.n = Collections.max(this.adjList.keySet());
+	}
+	
+	// getter for adjList
+	public HashMap<Integer, List<Integer>> getAdjList() {
+		return (HashMap<Integer, List<Integer>>) this.adjList;
+	}
+	
+	// getter for number of nodes
+	public int numNodes() {
+		return this.n;
+	}
+	
+	// getter for number of edges
+	public int numEdges() {
+		return this.m;
+	}
+	
 	// takes file input and returns list of strings, each of the form "a b"
 	private static ArrayList<String> edgeListStrings(String filename)
 	{
@@ -51,11 +87,6 @@ public class Graph {
 		return edgeListInts;
 	}
 	
-	public Graph() {
-		this.n = 0;
-		this.m = 0;
-		this.adjList = new HashMap<>();
-	}
 	
 	public void constructGraph(ArrayList<Integer[]> edgeListInts) {
 		for (Integer[] edge : edgeListInts) {
@@ -69,6 +100,10 @@ public class Graph {
 		
 		this.m = edgeListInts.size();
 		this.n = Collections.max(adjList.keySet());
+	}
+	
+	public void validateVertex(Integer v) {
+		if (v < 1 || v > this.n) throw new IndexOutOfBoundsException();
 	}
 	
 	public static void main(String[] args) {
