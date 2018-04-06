@@ -15,14 +15,18 @@ public class Graph {
 	private Map<Integer, List<Integer>> adjList;
 	private int n;
 	private int m;
+	private Map<Integer, Boolean> marked = new HashMap<>();
 	
-	public Graph() {
-		this.n = 0;
-		this.m = 0;
-		this.adjList = new HashMap<>();
-	}
+	
+//	public Graph() {
+//		this.n = 0;
+//		this.m = 0;
+//		this.adjList = new HashMap<>();
+//	}
 	
 	public Graph(String filename) {
+		this.adjList = new HashMap<>();
+		this.marked = new HashMap<>();
 		ArrayList<String> edgeListStrings = edgeListStrings(filename);
 		ArrayList<Integer[]> edgeListInts = edgeListInts(edgeListStrings);
 		for (Integer[] edge : edgeListInts) {
@@ -87,8 +91,7 @@ public class Graph {
 		return edgeListInts;
 	}
 	
-	
-	public void constructGraph(ArrayList<Integer[]> edgeListInts) {
+	/*public void constructGraph(ArrayList<Integer[]> edgeListInts) {
 		for (Integer[] edge : edgeListInts) {
 			if (adjList.containsKey(edge[0])) {
 				adjList.get(edge[0]).add(edge[1]);
@@ -100,25 +103,36 @@ public class Graph {
 		
 		this.m = edgeListInts.size();
 		this.n = Collections.max(adjList.keySet());
-	}
+	}*/
 	
 	public void validateVertex(Integer v) {
 		if (v < 1 || v > this.n) throw new IndexOutOfBoundsException();
 	}
 	
+	
+	// dfs
+	private void dfs(Graph G, Integer s) {
+		this.marked.put(s, true);
+		for (Integer headNode : G.adjList.get(s)) {
+			if (!marked.get(headNode).booleanValue()) {
+				dfs(G, headNode);
+			}
+		}
+	}
+	
+	
 	public static void main(String[] args) {
-		ArrayList<String> edgesStr = edgeListStrings("SCCmini.txt");
-		for (String string : edgesStr) {
-			System.out.println(string);
-		}
+//		ArrayList<String> edgesStr = edgeListStrings("SCCmini.txt");
+//		for (String string : edgesStr) {
+//			System.out.println(string);
+//		}
+//		
+//		ArrayList<Integer[]> edgesInt = edgeListInts(edgesStr);
+//		for (Integer[] edge : edgesInt) {
+//			System.out.println(edge[0] + ", " + edge[1]);
+//		}
 		
-		ArrayList<Integer[]> edgesInt = edgeListInts(edgesStr);
-		for (Integer[] edge : edgesInt) {
-			System.out.println(edge[0] + ", " + edge[1]);
-		}
-		
-		Graph sampleGraph = new Graph();
-		sampleGraph.constructGraph(edgesInt);
+		Graph sampleGraph = new Graph("SCCmini.txt");
 		
 		for (Integer source : sampleGraph.adjList.keySet()) {
 			System.out.println(source + ", " + sampleGraph.adjList.get(source));
