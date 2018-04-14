@@ -39,6 +39,10 @@ public class Graph {
 		}
 		this.m = edgeListInts.size();
 		this.n = Collections.max(this.adjList.keySet());
+		for (Integer node : this.adjList.keySet()) {
+			this.marked.put(node, false);
+		}
+		
 	}
 	
 	// getter for adjList
@@ -110,13 +114,73 @@ public class Graph {
 	}
 	
 	
-	// dfs
-	private void dfs(Graph G, Integer s) {
+	// depth-first search
+	private void dfs(Integer s) {
 		this.marked.put(s, true);
-		for (Integer headNode : G.adjList.get(s)) {
+		for (Integer headNode : adjList.get(s)) {
 			if (!marked.get(headNode).booleanValue()) {
-				dfs(G, headNode);
+				dfs(headNode);
 			}
+		}
+	}
+	
+	private class DFS {
+		private Integer t;
+		private Integer s;
+		boolean[] marked;
+		int[] leader;
+		int[] F;
+		
+		public DFS() {
+			t = 0;
+			s = null;	
+		}
+		
+		public int[] DFSLoop1(Graph G) {
+			int n = G.n;
+			
+			marked = new boolean[n + 1];
+			leader = new int[n + 1];
+			F = new int[n + 1];
+			for( int i = n; i >= 1 ; i--) {
+				if(!marked[i]) {
+					s = i;
+					dfs(G, i);
+				}
+			}
+			return F;
+		}
+		
+		public int[] DFSLoop2(Graph G, int[] F) {
+			int n = G.n;
+			this.F = new int[n + 1];
+			marked = new boolean[n + 1];
+			leader = new int[n + 1];
+			int index = F.length - 1;
+			
+			for(int i = index; i > 0; i--) {
+				if(!marked[F[i]]) {
+					s = F[i];
+					dfs(G, F[i]);
+				}
+			}
+			return leader;
+		}
+		
+		public void dfs(Graph G, int i) {
+			G.validateVertex(i);
+			marked[i] = true;
+			leader[i] = s;
+			
+			for (int j : G.adjList.get(i)) {
+				
+				if(!marked[j]) {
+					dfs(G,j);
+				}
+			}
+			t++;
+			G.validateVertex(t);
+			this.F[t] = i;
 		}
 	}
 	
@@ -140,6 +204,13 @@ public class Graph {
 		}
 		System.out.println(sampleGraph.m);
 		System.out.println(sampleGraph.n);
+		System.out.println("---");
+		sampleGraph.dfs(1);
+		for (Integer node : sampleGraph.marked.keySet()) {
+			System.out.println(sampleGraph.marked.get(node).booleanValue());
+		}
+		
+		
 	}
 
 }

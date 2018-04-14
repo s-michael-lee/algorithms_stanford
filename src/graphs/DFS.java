@@ -2,13 +2,22 @@
 //
 //import java.util.ArrayList;
 //
-//public class DFS_Loop {
-//	private Graph G;
-//	private Integer startNode;
+//public class DFS {
+//	private Integer t; // to compute "finishing time" for first dfs loop
+//	private Integer s; // start node
 //	boolean[] marked;
+//	Integer[] leader;
+//	Integer[] F; // to keep track of finishing times for nodes
 //	
-//	public DFS(Graph G, Integer startNode) {
-//		this.G = G;
+//	public DFS() {
+//		t = 0;
+//		s = null;
+//	}
+//	
+//	public void dfs(Graph G, Integer s) {
+//		G.validateVertex(s);
+//		marked[s] = true;
+//		
 //		this.startNode = startNode;
 //		this.marked = new boolean[G.numNodes()];
 //	}
